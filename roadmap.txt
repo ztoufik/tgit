@@ -1,0 +1,19 @@
+1. tgit: version control system with multiple backend supported (including sqlite database)
+2. functionalities:
+    1. tgit add for file staging
+    2. tgit commit for commiting
+    3. tgit hash-object for hashing blob content (files,dirs,commits)
+    4. tgit cat-file for displaying blob content based on hash-id
+    5. tgit diff,log, for diffing commits & logging commit history
+    6. tgit checkout  for branchs & refs
+    7. tgit merge for merging commits & branchs
+    6. (optional) tgit push & pull for remote repos (if possible from github)
+3.Design:
+    - tgit functionalities implemented as library modules 
+    - separate cli module for interacting with user commands
+    - data layer object dependency injected (startegy pattern) in the cli module
+3. Roadmap:
+    1.design the type system for blob, tree, commit, refs
+    2.API Data layer object specification
+    3.implement the data layer object for sqlite database engine
+    4.implement hash-object & cat-file for object database manipulation
