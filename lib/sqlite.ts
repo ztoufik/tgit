@@ -46,9 +46,14 @@ const BlobSchema = new EntitySchema<Myblob>({
     name: 'Blob',
     tableName: 'blobs', // Optional: specify table name if different from entity name
     columns: {
-        hash_id: {
-            type: String,
+        id:{
+            type:Number,
+            generated:true,
             primary: true,
+        },
+        hash: {
+            type: String,
+            nullable:false,
         },
         path:{
             type: String,

@@ -1,6 +1,6 @@
 import { subcommands,command, run, string, positional } from 'cmd-ts';
 import type { Tree} from "./lib/utils"
-import { hash_file,hash_dir, dir_walk,_blobize_dir} from "./lib/utils"
+import { _hash_file,hash_file,hash_dir, dir_walk,_blobize_dir} from "./lib/utils"
 import {repo} from './lib/sqlite'
 import { statSync } from "node:fs";
 
@@ -13,7 +13,10 @@ const hash_object = command({
   handler: (args) => {
       const stats = statSync(args.object_path)
       if(stats.isFile()){
-          hash_file(args.object_path,repo)
+          //hash_file(args.object_path,repo)
+          _hash_file(args.object_path).then(tree => { 
+              console.log(tree) 
+          })
       }
       if(stats.isDirectory()){
           //hash_dir(args.object_path,repo)

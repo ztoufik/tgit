@@ -15,13 +15,13 @@ async function hashString(input: string): Promise<string> {
   return hashhex;
 }
 
-async function _hash_file(file_path:string):Promise<Myblob>{
+export async function _hash_file(file_path:string):Promise<Myblob>{
     const content=fs.readFileSync(file_path,'utf8');
     const hash_id=await hashString(content);
     const blob:Myblob={
         content,
         path:file_path,
-        hash_id,
+        hash: hash_id,
         blob_type:"file",
         date:new Date(),
     };

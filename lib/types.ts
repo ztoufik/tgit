@@ -1,5 +1,5 @@
 export class Myblob {
-    hash_id!:string;
+    hash!:string;
 
     path!:string;
 
