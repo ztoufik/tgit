@@ -15,5 +15,5 @@
 3. Roadmap:
     1.design the type system for blob, tree, commit, refs
     2.API Data layer object specification
-    3.implement the data layer object for sqlite database engine
-    4.implement hash-object & cat-file for object database manipulation
+    3.implement hash-object & cat-file for object database manipulation
+    4.implement the data layer object for sqlite database engine

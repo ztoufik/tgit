@@ -1,12 +1,14 @@
-import type {Ref,Commit,Blob} from './types';
-export interface ISerialzer{
-    create_blob(blob:Blob):boolean;
-    retrieve_blob(hash_id:string):Blob|null;
+import type {Ref,Commit,Myblob} from './types';
 
-    create_commit(commit:Commit):boolean;
-    retrieve_commit(hash_id:string):Commit|null;
+export interface IDataLayer{
+    create_blob(blob:Myblob):void;
+    retrieve_blob(hash_id:string):Promise<Myblob>;
 
-    create_ref(ref:Ref):boolean;
-    update_ref(old_ref:Ref,new_ref:Ref):boolean;
-    retrieve_ref(name:string):Ref|null;
+    create_commit(commit:Commit):void;
+    retrieve_commit(hash_id:string):Promise<Commit>;
+
+    create_ref(ref:Ref):void;
+    update_ref(old_ref:Ref,new_ref:Ref):void;
+    retrieve_ref(name:string):Promise<Ref>;
 };
+

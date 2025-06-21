@@ -1,19 +1,9 @@
 import { subcommands,command, run, string, positional } from 'cmd-ts';
-import { hash_file} from "./lib/utils"
-import { DataSource} from "typeorm"
-import {Myblob,Commit,Ref} from './lib/types';
+import type { Tree} from "./lib/utils"
+import { hash_file,hash_dir, dir_walk,_blobize_dir} from "./lib/utils"
+import {repo} from './lib/sqlite'
+import { statSync } from "node:fs";
 
-const AppDataSource = new DataSource({
-    type: "sqlite",
-    database: "tgit.sql",
-    entities: [Myblob],
-    logging: true,
-    synchronize: true,
-})
-
-await AppDataSource.initialize()
-
-const repos =AppDataSource.getRepository(Myblob);
 
 const hash_object = command({
   name: 'hash-object',
@@ -21,10 +11,21 @@ const hash_object = command({
     object_path: positional({ type: string, displayName: 'object_path' }),
   },
   handler: (args) => {
-      hash_file(args.object_path,repos)
+      const stats = statSync(args.object_path)
+      if(stats.isFile()){
+          hash_file(args.object_path,repo)
+      }
+      if(stats.isDirectory()){
+          //hash_dir(args.object_path,repo)
+          const tree=dir_walk(args.object_path)
+          tree.then(tree => { 
+              let up_tree:Tree={}
+              up_tree[args.object_path]=tree;
+              console.log(_blobize_dir(up_tree)) 
+          })
+      }
   },
 });
-
 const app = subcommands({
   name: 'tgit', // The main command name
   description: 'git clone in TS',

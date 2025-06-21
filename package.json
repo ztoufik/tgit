@@ -1,12 +1,18 @@
 {
   "name": "tgit",
   "module": "index.ts",
-  "type": "module",
-  "private": true,
   "devDependencies": {
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "cmd-ts": "^0.13.0",
+    "reflect-metadata": "^0.2.2",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.24"
   }
 }

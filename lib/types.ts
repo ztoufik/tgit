@@ -1,24 +1,51 @@
-export type blob_type='file'|'tree'
-export type ref_type='crude_ref' | 'sym_ref';
+import { Entity, PrimaryColumn, Column} from "typeorm"
 
-export type Blob={
-    hash_id:string;
-    path:string;
-    type:blob_type;
-    date:Date;
-    content:string;
+
+@Entity({name:"myblob"})
+export class Myblob {
+    @PrimaryColumn("text")
+    hash_id!:string;
+
+    @Column()
+    path!:string;
+
+    @Column()
+    blob_type!:string
+
+    @Column("date")
+    date!:Date;
+
+    @Column("text")
+    content!:string;
 };
 
-export type Commit={
-    hash_id:string;
-    content:string;
-    parent:Commit[];
-    date:Date;
+@Entity()
+export class Commit {
+    @PrimaryColumn()
+    hash_id!:string;
+    @Column("text")
+    content!:string;
+    @Column()
+    parent!:Commit[];
+    @Column("date")
+    date!:Date;
 };
 
-export type Ref={
-    name:string;
-    type:ref_type;
-    content:string;
-    date:Date;
+@Entity()
+export class Ref {
+    @PrimaryColumn()
+    name!:string;
+    @Column()
+    ref_type!:string;
+    @Column("text")
+    content!:string;
+    @Column("date")
+    date!:Date;
+}
+
+export class File_Error{
+    msg:string;
+    constructor(msg:string){
+        this.msg=msg;
+    }
 }
