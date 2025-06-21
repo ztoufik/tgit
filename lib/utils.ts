@@ -28,7 +28,7 @@ export async function _hash_file(file_path:string):Promise<Myblob>{
     return blob;
 }
 
-export async function hash_file(file_path:string,repo:Repository<Myblob>):Promise<Boolean>{
+export async function store_file(file_path:string,repo:Repository<Myblob>):Promise<Boolean>{
     if (!await Bun.file(file_path).exists()){
         return false;
     }
