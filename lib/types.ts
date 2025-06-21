@@ -1,4 +1,6 @@
 export class Myblob {
+    id?:number;
+
     hash!:string;
 
     path!:string;

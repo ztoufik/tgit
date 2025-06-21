@@ -42,7 +42,7 @@ import { EntitySchema,DataSource} from "typeorm"
   }
   }*/
 
-const BlobSchema = new EntitySchema<Myblob>({
+export const BlobSchema = new EntitySchema<Myblob>({
     name: 'Blob',
     tableName: 'blobs', // Optional: specify table name if different from entity name
     columns: {
@@ -78,7 +78,6 @@ const AppDataSource = new DataSource({
     type: "sqlite",
     database: "tgit.sql",
     entities: [BlobSchema],
-    logging: true,
     synchronize: true,
 })
 

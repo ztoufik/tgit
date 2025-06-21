@@ -1,6 +1,6 @@
 import { subcommands,command, run, string, positional } from 'cmd-ts';
 import type { Tree} from "./lib/types"
-import { _hash_file,store_file,hash_dir, dir_walk,_blobize_dir} from "./lib/utils"
+import { _hash_file,store_file, deserialize_dir, store_dir,hash_dir as hash_dir} from "./lib/utils"
 import {repo} from './lib/sqlite'
 import { statSync } from "node:fs";
 
@@ -19,13 +19,10 @@ const hash_object = command({
           })
       }
       if(stats.isDirectory()){
-          //hash_dir(args.object_path,repo)
-          const tree=dir_walk(args.object_path)
-          tree.then(tree => { 
-              let up_tree:Tree={}
-              up_tree[args.object_path]=tree;
-              console.log(_blobize_dir(up_tree)) 
-          })
+          store_dir(args.object_path,repo)
+          //const tree=deserialize_dir(args.object_path)
+          //tree.then(tree => { let up_tree:Tree={};up_tree[args.object_path]=tree;console.log(up_tree) })
+          //tree.then(tree => { console.log(hash_dir(tree)[0],hash_dir(tree)[1]) })
       }
   },
 });

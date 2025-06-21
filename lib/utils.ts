@@ -36,13 +36,13 @@ export async function store_file(file_path:string,repo:Repository<Myblob>):Promi
     return false;
 }
 
-export async function dir_walk(dir_path:string):Promise<Tree>{
+export async function deserialize_dir(dir_path:string):Promise<Tree>{
     let trees:Tree={}
     const entries = fs.readdirSync(dir_path, { withFileTypes: true });
     for(const entrie of entries){
         const fullpath=path.join(entrie.path,entrie.name)
         if (entrie.isDirectory()){
-            trees[entrie.name]=await dir_walk(fullpath)
+            trees[entrie.name]=await deserialize_dir(fullpath)
         }
         else{
             trees[entrie.name]=await _hash_file(fullpath)
@@ -51,26 +51,37 @@ export async function dir_walk(dir_path:string):Promise<Tree>{
     return trees;
 }
 
-export function _blobize_dir(tree:Tree):any{
+export function hash_dir(tree:Tree):[any,any]{
     let hashs_tree={};
+    let files_blob=[];
     for(const entrie in tree){
-        if(tree[entrie].hash_id){
-            hashs_tree[entrie]=tree[entrie].hash_id
+        if(tree[entrie].hash){
+            hashs_tree[entrie]=tree[entrie].hash
+            files_blob.push(tree[entrie])
         }
         else {
-            hashs_tree[entrie]=_blobize_dir(tree[entrie])
+            let output=hash_dir(tree[entrie])
+            hashs_tree[entrie]=output[0]
+            files_blob=files_blob.concat(output[1])
         }
     }
-    return hashs_tree;
+    return [hashs_tree,files_blob];
 }
 
-export async function hash_dir(dir_tree:Tree,repo:Repository<Myblob>){
-    for(const entrie in dir_tree){
-        if (dir_tree[entrie].hash_id){
-            await repo.save(dir_tree[entrie] as Myblob)
-        }
-        else{
-            await hash_dir(dir_tree[entrie],repo);
-        }
+export async function store_dir(dir_path:string,repo:Repository<Myblob>){
+    const tree=await deserialize_dir(dir_path)
+    const [hashs_tree,files_blobs]=hash_dir(tree)
+    let dir_tree={};
+    dir_tree[dir_path]=hashs_tree;
+    const dir_content=JSON.stringify(dir_tree)
+    const dir_hash=await hashString(dir_content)
+    const dir_blob:Myblob={
+        hash:dir_hash,
+        content:dir_content,
+        blob_type:'tree',
+        path:dir_path,
+        date:new Date(),
     }
+    await repo.save(dir_blob)
+    await repo.save(files_blobs)
 }
