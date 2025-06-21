@@ -22,3 +22,7 @@ export class File_Error{
         this.msg=msg;
     }
 }
+
+export type Tree={
+    string?:Myblob|Tree,
+}

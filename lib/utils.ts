@@ -1,15 +1,11 @@
-import {Myblob,Commit,Ref} from './types.ts';
-import { Entity,PrimaryColumn,Column,Repository} from "@typeorm"
+import {Tree,Myblob,Commit,Ref} from './types.ts';
+import { Repository} from "@typeorm"
 import * as fs from 'fs';
 import * as path from "path"
 
 
-export type Tree={
-    string?:Myblob|Tree,
-}
 
 async function hashString(input: string): Promise<string> {
-
     const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
     const hashhex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
   return hashhex;

@@ -1,6 +1,6 @@
 import { subcommands,command, run, string, positional } from 'cmd-ts';
-import type { Tree} from "./lib/utils"
-import { _hash_file,hash_file,hash_dir, dir_walk,_blobize_dir} from "./lib/utils"
+import type { Tree} from "./lib/types"
+import { _hash_file,store_file,hash_dir, dir_walk,_blobize_dir} from "./lib/utils"
 import {repo} from './lib/sqlite'
 import { statSync } from "node:fs";
 
