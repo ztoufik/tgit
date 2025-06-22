@@ -12,7 +12,7 @@ const hash_object = command({
   handler: (args) => {
       const stats = statSync(args.object_path)
       if(stats.isFile()){
-          store_file(args.object_path,repo)
+          store_file(args.object_path,repo).then((result)=>{console.log(result.hash)})
       }
       if(stats.isDirectory()){
           store_dir(args.object_path,repo)
