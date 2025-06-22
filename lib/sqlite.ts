@@ -1,6 +1,7 @@
 import {Myblob,Commit,Ref} from './types';
 import type { IDataLayer } from './data';
 import { EntitySchema,DataSource} from "typeorm"
+import { db_path} from './config'
 
 
 /*class SqliteHasher implements IDataLayer{
@@ -76,7 +77,7 @@ export const BlobSchema = new EntitySchema<Myblob>({
 
 const AppDataSource = new DataSource({
     type: "sqlite",
-    database: "tgit.sql",
+    database: db_path,
     entities: [BlobSchema],
     synchronize: true,
 })
