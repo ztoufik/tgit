@@ -15,7 +15,7 @@ const hash_object = command({
           store_file(args.object_path,repo).then((result)=>{console.log(result.hash)})
       }
       if(stats.isDirectory()){
-          store_dir(args.object_path,repo)
+          store_dir(args.object_path,repo).then((blob)=>{console.log(blob.hash)})
       }
   },
 });

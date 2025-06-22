@@ -67,7 +67,7 @@ export function hash_dir(tree:Tree):[any,any]{
     return [hashs_tree,files_blob];
 }
 
-export async function store_dir(dir_path:string,repo:Repository<Myblob>){
+export async function store_dir(dir_path:string,repo:Repository<Myblob>):Promise<Myblob>{
     const tree=await deserialize_dir(dir_path)
     const [hashs_tree,files_blobs]=hash_dir(tree)
     let dir_tree={};
@@ -81,8 +81,8 @@ export async function store_dir(dir_path:string,repo:Repository<Myblob>){
         path:dir_path,
         date:new Date(),
     }
-    await repo.save(dir_blob)
     await repo.save(files_blobs)
+    return await repo.save(dir_blob)
 }
 
 export async function retrieve_obj(object_id:string,repo:Repository<Myblob>):Promise<Myblob>{
