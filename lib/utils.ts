@@ -85,3 +85,8 @@ export async function store_dir(dir_path:string,repo:Repository<Myblob>){
     await repo.save(dir_blob)
     await repo.save(files_blobs)
 }
+
+export async function retrieve_obj(object_id:string,repo:Repository<Myblob>):Promise<Myblob>{
+    const obj:any={hash:object_id}
+    return await repo.find(Myblob,obj);
+}
