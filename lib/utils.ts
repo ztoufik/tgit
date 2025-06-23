@@ -1,7 +1,9 @@
 import {Tree,Myblob,Commit,Ref} from './types.ts';
 import { Repository} from "@typeorm"
+import { tgit_ignore_file} from './config.ts'
 import * as fs from 'fs';
 import * as path from "path"
+
 
 
 
@@ -11,7 +13,11 @@ async function hashString(input: string): Promise<string> {
   return hashhex;
 }
 
-export async function _hash_file(file_path:string):Promise<Myblob>{
+export async function _hash_file(file_path:string):Promise<Myblob|Boolean>{
+    console.log(file_path)
+    if (tgit_ignore_file.includes(file_path)){
+        return false
+    }
     const content=fs.readFileSync(file_path,'utf8');
     const hash_id=await hashString(content);
     const blob:Myblob={
@@ -29,10 +35,7 @@ export async function store_file(file_path:string,repo:Repository<Myblob>):Promi
         return false;
     }
     let _blob=await _hash_file(file_path);
-    if(repo){
-        return await repo.save(_blob)
-    }
-    return false;
+    return await repo.save(_blob)
 }
 
 export async function deserialize_dir(dir_path:string):Promise<Tree>{

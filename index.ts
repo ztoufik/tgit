@@ -9,13 +9,15 @@ const hash_object = command({
   args: {
     object_path: positional({ type: string, displayName: 'object_path' }),
   },
-  handler: (args) => {
+  handler: async (args) => {
       const stats = statSync(args.object_path)
       if(stats.isFile()){
-          store_file(args.object_path,repo).then((result)=>{console.log(result.hash)})
+          const result=await store_file(args.object_path,repo)
+          console.log(result.hash)
       }
       if(stats.isDirectory()){
-          store_dir(args.object_path,repo).then((blob)=>{console.log(blob.hash)})
+          const blob=await store_dir(args.object_path,repo)
+          console.log(blob.hash)
       }
   },
 });
