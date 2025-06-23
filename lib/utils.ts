@@ -1,21 +1,17 @@
-import {Tree,Myblob,Commit,Ref} from './types.ts';
+import type {Tree,Myblob,Commit,Ref} from './types.ts';
 import { Repository} from "@typeorm"
-import { tgit_ignore_file} from './config.ts'
+import { ignore_dir_file} from './config.ts'
 import * as fs from 'fs';
 import * as path from "path"
-
-
-
 
 async function hashString(input: string): Promise<string> {
     const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
     const hashhex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  return hashhex;
+    return hashhex;
 }
 
-export async function _hash_file(file_path:string):Promise<Myblob|Boolean>{
-    console.log(file_path)
-    if (tgit_ignore_file.includes(file_path)){
+export async function desreliaze_file(file_path:string):Promise<Myblob|Boolean>{
+    if (await ignore_dir_file(file_path)){
         return false
     }
     const content=fs.readFileSync(file_path,'utf8');
@@ -34,23 +30,29 @@ export async function store_file(file_path:string,repo:Repository<Myblob>):Promi
     if (!await Bun.file(file_path).exists()){
         return false;
     }
-    let _blob=await _hash_file(file_path);
-    return await repo.save(_blob)
+    let _blob=await desreliaze_file(file_path);
+    if(_blob){
+        return await repo.save(_blob)
+    }
+    return false;
 }
 
-export async function deserialize_dir(dir_path:string):Promise<Tree>{
-    let trees:Tree={}
-    const entries = fs.readdirSync(dir_path, { withFileTypes: true });
-    for(const entrie of entries){
-        const fullpath=path.join(entrie.path,entrie.name)
-        if (entrie.isDirectory()){
-            trees[entrie.name]=await deserialize_dir(fullpath)
+export async function deserialize_dir(dir_path:string):Promise<Tree|Boolean>{
+    if(!await ignore_dir_file(dir_path)){
+        let trees:Tree={}
+        const entries = fs.readdirSync(dir_path, { withFileTypes: true });
+        for(const entrie of entries){
+            const fullpath=path.join(entrie.path,entrie.name)
+            if (entrie.isDirectory()){
+                trees[entrie.name]=await deserialize_dir(fullpath)
+            }
+            else{
+                trees[entrie.name]=await desreliaze_file(fullpath)
+            }
         }
-        else{
-            trees[entrie.name]=await _hash_file(fullpath)
-        }
+        return trees;
     }
-    return trees;
+    return false;
 }
 
 export function hash_dir(tree:Tree):[any,any]{
@@ -70,22 +72,25 @@ export function hash_dir(tree:Tree):[any,any]{
     return [hashs_tree,files_blob];
 }
 
-export async function store_dir(dir_path:string,repo:Repository<Myblob>):Promise<Myblob>{
+export async function store_dir(dir_path:string,repo:Repository<Myblob>):Promise<Myblob|Boolean>{
     const tree=await deserialize_dir(dir_path)
-    const [hashs_tree,files_blobs]=hash_dir(tree)
-    let dir_tree={};
-    dir_tree[dir_path]=hashs_tree;
-    const dir_content=JSON.stringify(dir_tree)
-    const dir_hash=await hashString(dir_content)
-    const dir_blob:Myblob={
-        hash:dir_hash,
-        content:dir_content,
-        blob_type:'tree',
-        path:dir_path,
-        date:new Date(),
+    if (tree){
+        const [hashs_tree,files_blobs]=hash_dir(tree)
+        let dir_tree={};
+        dir_tree[dir_path]=hashs_tree;
+        const dir_content=JSON.stringify(dir_tree)
+        const dir_hash=await hashString(dir_content)
+        const dir_blob:Myblob={
+            hash:dir_hash,
+            content:dir_content,
+            blob_type:'tree',
+            path:dir_path,
+            date:new Date(),
+        }
+        await repo.save(files_blobs)
+        return await repo.save(dir_blob)
     }
-    await repo.save(files_blobs)
-    return await repo.save(dir_blob)
+    return false;
 }
 
 export async function retrieve_obj(object_id:string,repo:Repository<Myblob>):Promise<Myblob>{

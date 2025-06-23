@@ -13,7 +13,10 @@
     - separate cli module for interacting with user commands
     - data layer object dependency injected (startegy pattern) in the cli module
 3. Roadmap:
-    1.design the type system for blob, tree, commit, refs
-    2.API Data layer object specification
-    3.implement hash-object & cat-file for object database manipulation
-    4.implement the data layer object for sqlite database engine
+   [x] asynchronous command handler
+   [x] .tgitignore
+   [] many-many relation schema 
+   [] store/retrieve blob&refs
+   [] errorhandling
+   [] testsuite
+   [] datalayer
